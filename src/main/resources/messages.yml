@@ -1,0 +1,36 @@
+# All player-facing text (MiniMessage). <prefix> is prepended to command feedback.
+prefix: "<gradient:#5865F2:#7289DA>Discord</gradient> <dark_gray>»</dark_gray> "
+
+# Requirement checklist lines (no prefix; Claimo wraps them with check/cross).
+requirement-linked: "<gray>Link your Discord account with <white>/claimodiscord link</white>."
+requirement-member: "<gray>Join our Discord server."
+requirement-role: "<gray>Have a required role on our Discord."
+requirement-booster: "<gray>Boost our Discord server."
+requirement-messages: "<gray>Send <white><amount></white> messages on Discord <dark_gray>(<sent>/<amount>)</dark_gray>."
+requirement-command: "<gray>Use <white>/<command></white> on Discord <dark_gray>(<used>/<amount>)</dark_gray>."
+requirement-server-tag: "<gray>Equip our server tag <white><tag></white> on your profile."
+requirement-status: "<gray>Put <white><value></white> in your Discord status."
+not-linked: "<gray>Link your Discord account first with <white>/claimodiscord link</white>."
+bot-offline: "<gray>The Discord bot is offline; try again shortly."
+
+# /claimodiscord command feedback.
+cmd-usage: "<gray>Usage: <white>/claimodiscord <link|unlink|list></white>"
+cmd-players-only: "<red>Only players can use this command."
+cmd-no-permission: "<red>You don't have permission to do that."
+
+cmd-link-created: "<green>Your link code is <white><code></white>.</green> <gray>Run <white>/<command> <code></white> on our Discord within <white><expiry></white>.</gray>"
+cmd-link-success: "<green>Your Discord account (<white><name></white>) is now linked!"
+
+cmd-unlink-success: "<green>Unlinked your Discord account."
+cmd-unlink-none: "<red>You don't have a Discord account linked."
+
+cmd-list-none: "<gray>You haven't linked a Discord account. Try <white>/claimodiscord link</white>."
+cmd-list-linked: "<gray>Discord: <white><discord_id></white> <green>(linked)</green>"
+
+# Admin.
+cmd-status: "<gray>Bot: <state> <dark_gray>|</dark_gray> Guild: <white><guild></white>"
+cmd-set-usage: "<gray>Usage: <white>/claimodiscord set <player> <discord-id></white>"
+cmd-set-success: "<green>Linked <white><player></white> to Discord id <white><discord_id></white>."
+cmd-player-not-found: "<red>No known player named '<player>'. They must have joined the server before."
+cmd-reloaded: "<green>ClaimoDiscordAddon configuration reloaded."
+cmd-reload-failed: "<red>Reload failed: <error>"

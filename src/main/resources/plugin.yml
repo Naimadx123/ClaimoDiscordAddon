@@ -1,0 +1,29 @@
+name: ClaimoDiscordAddon
+version: '${version}'
+
+main: zone.vao.claimoDiscordAddon.ClaimoDiscordAddon
+api-version: '26.2'
+load: POSTWORLD
+author: "Naimad (dc: 4g0)"
+description: "Discord voucher requirements for Claimo (member / role / booster / messages / command / server tag / status)."
+depend: [Claimo]
+
+libraries:
+  - "com.zaxxer:HikariCP:${hikariVersion}"
+  - "org.xerial:sqlite-jdbc:3.50.1.0"
+  - "com.mysql:mysql-connector-j:9.3.0"
+  - "org.postgresql:postgresql:42.7.7"
+
+commands:
+  claimodiscord:
+    description: Link and manage your Discord account for Claimo rewards.
+    usage: "/claimodiscord <link|unlink|list>"
+    aliases: [cdiscord, cdlink]
+
+permissions:
+  claimodiscord.link:
+    description: Allows linking and managing your own Discord account.
+    default: true
+  claimodiscord.admin:
+    description: Allows force-linking, viewing bot status, and reloading.
+    default: op
