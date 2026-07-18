@@ -186,6 +186,8 @@ class DiscordManager(private val plugin: ClaimoDiscordAddon) : ListenerAdapter()
                 uuid == null -> event.hook.sendMessage(config.discordLinkInvalid).setEphemeral(true).queue()
                 plugin.linkStorage.findByDiscordId(discordId)?.let { it.uuid != uuid } == true ->
                     event.hook.sendMessage(config.discordLinkTaken).setEphemeral(true).queue()
+                plugin.linkStorage.loadProfile(uuid).discordId?.let { it != discordId } == true ->
+                    event.hook.sendMessage(config.discordLinkAlready).setEphemeral(true).queue()
                 else -> {
                     plugin.linkStorage.saveProfile(DiscordProfile(uuid, discordId))
                     plugin.notifyLinked(uuid, name)

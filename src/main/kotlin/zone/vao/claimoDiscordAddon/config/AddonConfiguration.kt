@@ -14,6 +14,7 @@ data class AddonConfiguration(
     val discordLinkSuccess: String,
     val discordLinkInvalid: String,
     val discordLinkTaken: String,
+    val discordLinkAlready: String,
     val discordCommandReply: String,
     val linkButtonLabel: String,
     val linkModalTitle: String,

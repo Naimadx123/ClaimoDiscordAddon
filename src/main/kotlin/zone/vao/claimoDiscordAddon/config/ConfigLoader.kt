@@ -31,6 +31,7 @@ class ConfigLoader(private val plugin: JavaPlugin) {
             discordLinkSuccess = discord?.getString("link-success", "Linked to **%player%**.") ?: "Linked to **%player%**.",
             discordLinkInvalid = discord?.getString("link-invalid", "Invalid or expired code.") ?: "Invalid or expired code.",
             discordLinkTaken = discord?.getString("link-taken", "Already linked to someone else.") ?: "Already linked to someone else.",
+            discordLinkAlready = discord?.getString("link-already", "That Minecraft account already has a Discord account linked.") ?: "That Minecraft account already has a Discord account linked.",
             discordCommandReply = discord?.getString("command-reply", "Recorded! (%used%/%amount%)") ?: "Recorded! (%used%/%amount%)",
             linkButtonLabel = discord?.getString("link-button-label", "Link account") ?: "Link account",
             linkModalTitle = discord?.getString("link-modal-title", "Link your account") ?: "Link your account",

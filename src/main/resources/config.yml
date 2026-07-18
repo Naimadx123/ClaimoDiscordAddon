@@ -70,7 +70,9 @@ discord:
   link-embed-footer: "Claimo"
   # Reply when the entered code is wrong or expired.
   link-invalid: "That code is invalid or has expired. Run `/claimodiscord link` in-game to get a new one."
-  # Reply when the target account is already linked to a different Discord user.
-  link-taken: "That Minecraft account is already linked to another Discord user."
+  # Reply when this Discord account is already linked to a different Minecraft account.
+  link-taken: "This Discord account is already linked to another Minecraft account."
+  # Reply when the Minecraft account already has a different Discord account linked.
+  link-already: "That Minecraft account already has a Discord account linked. Unlink it in-game first with /claimodiscord unlink."
   # Reply after using an admin-defined discord_command. %used% = this user's count, %amount% = target.
   command-reply: "Recorded! (%used%/%amount% for this reward)"
