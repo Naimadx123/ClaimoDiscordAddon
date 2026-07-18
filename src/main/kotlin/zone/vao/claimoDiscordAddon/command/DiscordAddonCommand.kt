@@ -1,9 +1,12 @@
 package zone.vao.claimoDiscordAddon.command
 
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.arguments.StringArgumentType
+import com.mojang.brigadier.tree.LiteralCommandNode
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
-import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
-import org.bukkit.command.TabExecutor
 import org.bukkit.entity.Player
 import zone.vao.claimoDiscordAddon.ClaimoDiscordAddon
 import zone.vao.claimoDiscordAddon.config.Messages
@@ -12,21 +15,76 @@ import zone.vao.claimoDiscordAddon.storage.LinkStorage
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
-class DiscordAddonCommand(private val plugin: ClaimoDiscordAddon) : TabExecutor {
+@Suppress("UnstableApiUsage")
+class DiscordAddonCommand(private val plugin: ClaimoDiscordAddon) {
 
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        when (args.getOrNull(0)?.lowercase()) {
-            "link" -> handleLink(sender)
-            "unlink" -> handleUnlink(sender)
-            "list" -> handleList(sender)
-            "status" -> handleStatus(sender)
-            "panel" -> handlePanel(sender, args)
-            "set" -> handleSet(sender, args)
-            "reload" -> handleReload(sender)
-            else -> messages().send(sender, "cmd-usage")
-        }
-        return true
-    }
+    fun build(commandName: String): LiteralCommandNode<CommandSourceStack> =
+        Commands.literal(commandName)
+            .executes { ctx -> messages().send(ctx.source.sender, "cmd-usage"); Command.SINGLE_SUCCESS }
+            .then(
+                Commands.literal("link")
+                    .requires { it.sender.hasPermission(LINK_PERMISSION) }
+                    .executes { ctx -> handleLink(ctx.source.sender); Command.SINGLE_SUCCESS }
+            )
+            .then(
+                Commands.literal("unlink")
+                    .requires { it.sender.hasPermission(LINK_PERMISSION) }
+                    .executes { ctx -> handleUnlink(ctx.source.sender); Command.SINGLE_SUCCESS }
+            )
+            .then(
+                Commands.literal("list")
+                    .requires { it.sender.hasPermission(LINK_PERMISSION) }
+                    .executes { ctx -> handleList(ctx.source.sender); Command.SINGLE_SUCCESS }
+            )
+            .then(
+                Commands.literal("status")
+                    .requires { it.sender.hasPermission(ADMIN_PERMISSION) }
+                    .executes { ctx -> handleStatus(ctx.source.sender); Command.SINGLE_SUCCESS }
+            )
+            .then(
+                Commands.literal("reload")
+                    .requires { it.sender.hasPermission(ADMIN_PERMISSION) }
+                    .executes { ctx -> handleReload(ctx.source.sender); Command.SINGLE_SUCCESS }
+            )
+            .then(
+                Commands.literal("panel")
+                    .requires { it.sender.hasPermission(ADMIN_PERMISSION) }
+                    .executes { ctx -> handlePanel(ctx.source.sender, null); Command.SINGLE_SUCCESS }
+                    .then(
+                        Commands.argument("channel", StringArgumentType.word())
+                            .executes { ctx ->
+                                handlePanel(ctx.source.sender, StringArgumentType.getString(ctx, "channel"))
+                                Command.SINGLE_SUCCESS
+                            }
+                    )
+            )
+            .then(
+                Commands.literal("set")
+                    .requires { it.sender.hasPermission(ADMIN_PERMISSION) }
+                    .then(
+                        Commands.argument("player", StringArgumentType.word())
+                            .suggests { _, builder ->
+                                val prefix = builder.remaining.lowercase()
+                                plugin.server.onlinePlayers
+                                    .map { it.name }
+                                    .filter { it.lowercase().startsWith(prefix) }
+                                    .forEach(builder::suggest)
+                                builder.buildFuture()
+                            }
+                            .then(
+                                Commands.argument("discord-id", StringArgumentType.word())
+                                    .executes { ctx ->
+                                        handleSet(
+                                            ctx.source.sender,
+                                            StringArgumentType.getString(ctx, "player"),
+                                            StringArgumentType.getString(ctx, "discord-id"),
+                                        )
+                                        Command.SINGLE_SUCCESS
+                                    }
+                            )
+                    )
+            )
+            .build()
 
     private fun handleLink(sender: CommandSender) {
         val player = sender as? Player ?: return messages().send(sender, "cmd-players-only")
@@ -36,15 +94,6 @@ class DiscordAddonCommand(private val plugin: ClaimoDiscordAddon) : TabExecutor 
             Placeholder.unparsed("code", code),
             Placeholder.unparsed("expiry", humanizeSeconds(plugin.configuration.codeExpirySeconds)),
         )
-    }
-
-    private fun handlePanel(sender: CommandSender, args: Array<out String>) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) return messages().send(sender, "cmd-no-permission")
-        val channelId = args.getOrNull(1)?.trim()?.toLongOrNull() ?: plugin.configuration.panelChannelId
-        if (channelId == 0L) return messages().send(sender, "cmd-panel-usage")
-        plugin.discord.postLinkPanel(channelId).whenComplete { ok, _ ->
-            onMain { messages().send(sender, if (ok == true) "cmd-panel-sent" else "cmd-panel-failed") }
-        }
     }
 
     private fun handleUnlink(sender: CommandSender) {
@@ -68,7 +117,6 @@ class DiscordAddonCommand(private val plugin: ClaimoDiscordAddon) : TabExecutor 
     }
 
     private fun handleStatus(sender: CommandSender) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) return messages().send(sender, "cmd-no-permission")
         val state = if (plugin.discord.isReady()) "<green>online</green>" else "<red>offline</red>"
         messages().send(
             sender, "cmd-status",
@@ -77,38 +125,32 @@ class DiscordAddonCommand(private val plugin: ClaimoDiscordAddon) : TabExecutor 
         )
     }
 
-    private fun handleSet(sender: CommandSender, args: Array<out String>) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) return messages().send(sender, "cmd-no-permission")
-        if (args.size < 3) return messages().send(sender, "cmd-set-usage")
-        val uuid = resolveUuid(args[1]) ?: return messages().send(sender, "cmd-player-not-found", Placeholder.parsed("player", args[1]))
-        val discordId = args[2].trim().toLongOrNull() ?: return messages().send(sender, "cmd-set-usage")
+    private fun handlePanel(sender: CommandSender, channelArg: String?) {
+        val channelId = channelArg?.trim()?.toLongOrNull() ?: plugin.configuration.panelChannelId
+        if (channelId == 0L) return messages().send(sender, "cmd-panel-usage")
+        plugin.discord.postLinkPanel(channelId).whenComplete { ok, _ ->
+            onMain { messages().send(sender, if (ok == true) "cmd-panel-sent" else "cmd-panel-failed") }
+        }
+    }
+
+    private fun handleSet(sender: CommandSender, playerName: String, discordIdArg: String) {
+        val uuid = resolveUuid(playerName)
+            ?: return messages().send(sender, "cmd-player-not-found", Placeholder.parsed("player", playerName))
+        val discordId = discordIdArg.trim().toLongOrNull() ?: return messages().send(sender, "cmd-set-usage")
         runStorage { storage().saveProfile(DiscordProfile(uuid, discordId)) } then {
             messages().send(
                 sender, "cmd-set-success",
-                Placeholder.parsed("player", args[1]),
+                Placeholder.parsed("player", playerName),
                 Placeholder.unparsed("discord_id", discordId.toString()),
             )
         }
     }
 
     private fun handleReload(sender: CommandSender) {
-        if (!sender.hasPermission(ADMIN_PERMISSION)) return messages().send(sender, "cmd-no-permission")
         runCatching { plugin.reloadConfiguration() }
             .onSuccess { messages().send(sender, "cmd-reloaded") }
             .onFailure { messages().send(sender, "cmd-reload-failed", Placeholder.parsed("error", it.message ?: "unknown")) }
     }
-
-    override fun onTabComplete(sender: CommandSender, command: Command, label: String, args: Array<out String>): List<String> {
-        val admin = sender.hasPermission(ADMIN_PERMISSION)
-        return when (args.size) {
-            1 -> (PLAYER_SUBS + if (admin) ADMIN_SUBS else emptyList()).filter { it.startsWith(args[0].lowercase()) }
-            2 -> if (admin && args[0].lowercase() == "set") onlinePlayers(args[1]) else emptyList()
-            else -> emptyList()
-        }
-    }
-
-    private fun onlinePlayers(prefix: String): List<String> =
-        plugin.server.onlinePlayers.map { it.name }.filter { it.startsWith(prefix, ignoreCase = true) }
 
     private fun resolveUuid(name: String): UUID? {
         plugin.server.getPlayerExact(name)?.let { return it.uniqueId }
@@ -144,8 +186,7 @@ class DiscordAddonCommand(private val plugin: ClaimoDiscordAddon) : TabExecutor 
     }
 
     private companion object {
+        const val LINK_PERMISSION = "claimodiscord.link"
         const val ADMIN_PERMISSION = "claimodiscord.admin"
-        val PLAYER_SUBS = listOf("link", "unlink", "list")
-        val ADMIN_SUBS = listOf("panel", "set", "status", "reload")
     }
 }

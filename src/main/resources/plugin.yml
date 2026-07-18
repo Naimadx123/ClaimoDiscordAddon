@@ -14,12 +14,6 @@ libraries:
   - "com.mysql:mysql-connector-j:9.3.0"
   - "org.postgresql:postgresql:42.7.7"
 
-commands:
-  claimodiscord:
-    description: Link and manage your Discord account for Claimo rewards.
-    usage: "/claimodiscord <link|unlink|list>"
-    aliases: [cdiscord, cdlink]
-
 permissions:
   claimodiscord.link:
     description: Allows linking and managing your own Discord account.

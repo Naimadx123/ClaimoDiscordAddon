@@ -20,6 +20,7 @@ class ConfigLoader(private val plugin: JavaPlugin) {
         val discord = main.getConfigurationSection("discord")
 
         return AddonConfiguration(
+            commandName = main.getString("command")?.trim()?.ifBlank { null } ?: "claimodiscord",
             token = bot?.getString("token")?.trim() ?: "",
             guildId = bot?.getString("guild-id")?.trim()?.toLongOrNull() ?: 0L,
             activity = bot?.getString("activity") ?: "",

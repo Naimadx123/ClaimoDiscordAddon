@@ -132,8 +132,11 @@ connection. Changing the storage type needs a restart.
 
 `claimodiscord.link` defaults to everyone. `claimodiscord.admin` defaults to operators.
 
-Changes to the bot token, server id, intents, or storage type need a full restart. Message and
-slash command changes apply on reload.
+The base command name is set in `config.yml` under `command`, so `/claimodiscord` above is only the
+default. A change to the command name needs a restart.
+
+Changes to the command, bot token, server id, intents, or storage type need a full restart. Message
+and slash command changes apply on reload.
 
 ## Building
 

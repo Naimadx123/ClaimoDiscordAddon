@@ -1,6 +1,9 @@
 # ClaimoDiscordAddon configuration.
-# Changes to the bot token, guild id, intents, or storage type require a full server restart;
-# messages and voucher-driven slash commands can be applied with /claimodiscord reload.
+# Changes to the command, bot token, guild id, intents, or storage type require a full server
+# restart; messages and voucher-driven slash commands can be applied with /<command> reload.
+
+# The base in-game command.
+command: claimodiscord
 
 bot:
   # Your Discord bot token from https://discord.com/developers/applications

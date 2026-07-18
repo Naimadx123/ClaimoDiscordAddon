@@ -3,6 +3,7 @@ package zone.vao.claimoDiscordAddon.config
 import zone.vao.claimoDiscordAddon.storage.StorageConfig
 
 data class AddonConfiguration(
+    val commandName: String,
     val token: String,
     val guildId: Long,
     val activity: String,

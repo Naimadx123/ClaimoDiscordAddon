@@ -1,5 +1,6 @@
 package zone.vao.claimoDiscordAddon
 
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.plugin.java.JavaPlugin
 import zone.vao.claimoDiscordAddon.command.DiscordAddonCommand
@@ -17,6 +18,7 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
+@Suppress("UnstableApiUsage")
 class ClaimoDiscordAddon : JavaPlugin() {
 
     val discordExecutor = Executors.newCachedThreadPool(DaemonThreadFactory)
@@ -48,11 +50,7 @@ class ClaimoDiscordAddon : JavaPlugin() {
         discord.updateCommands(DiscordRequirements.commandSpecs())
         discord.start()
 
-        val command = DiscordAddonCommand(this)
-        getCommand("claimodiscord")?.apply {
-            setExecutor(command)
-            tabCompleter = command
-        } ?: logger.warning("Command 'claimodiscord' is missing from plugin.yml; the /claimodiscord command is unavailable.")
+        registerCommand()
 
         server.asyncScheduler.runAtFixedRate(this, { linkStorage.flush() }, 60L, 60L, TimeUnit.SECONDS)
 
@@ -64,6 +62,16 @@ class ClaimoDiscordAddon : JavaPlugin() {
         runCatching { DiscordRequirements.unregister() }
         if (::linkStorage.isInitialized) runCatching { linkStorage.close() }
         discordExecutor.shutdownNow()
+    }
+
+    private fun registerCommand() {
+        val command = DiscordAddonCommand(this)
+        lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+            event.registrar().register(
+                command.build(configuration.commandName),
+                "Link and manage your Discord account for Claimo rewards.",
+            )
+        }
     }
 
     fun reloadConfiguration() {
