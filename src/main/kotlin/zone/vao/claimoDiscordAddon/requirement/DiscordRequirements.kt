@@ -95,6 +95,28 @@ object DiscordRequirements {
                 RequirementInput.TextInput("match", "Match mode (contains or equals)", initial = "contains"),
             ),
         )
+
+        ClaimoApi.registerRequirement(
+            DiscordRequirementTypes.ACCOUNT_AGE,
+            { cfg ->
+                val duration = cfg.getString("duration")?.trim().orEmpty()
+                val requiredMillis =
+                    if (duration.isNotEmpty()) parseDurationMillis(duration) else cfg.getLong("days", 0L) * DAY_MILLIS
+                AccountAgeRequirement(storage(), messages(), executor, requiredMillis)
+            },
+            listOf(RequirementInput.TextInput("duration", "Account age (e.g. 30d, 2w)", initial = "30d")),
+        )
+
+        ClaimoApi.registerRequirement(
+            DiscordRequirementTypes.MEMBER_SINCE,
+            { cfg ->
+                val duration = cfg.getString("duration")?.trim().orEmpty()
+                val requiredMillis =
+                    if (duration.isNotEmpty()) parseDurationMillis(duration) else cfg.getLong("days", 0L) * DAY_MILLIS
+                MemberSinceRequirement(storage(), messages(), discord(), executor, requiredMillis)
+            },
+            listOf(RequirementInput.TextInput("duration", "Time on the server (e.g. 30d, 2w)", initial = "30d")),
+        )
     }
 
     fun unregister() {
@@ -288,6 +310,88 @@ private class StatusRequirement(
                 }
             }
         }
+}
+
+private class AccountAgeRequirement(
+    private val storage: LinkStorage,
+    private val messages: Messages,
+    private val executor: Executor,
+    private val requiredMillis: Long,
+) : Requirement {
+    override fun check(context: RequirementContext): CompletableFuture<RequirementResult> =
+        discordId(context.player.uniqueId, storage, executor).thenApply { id ->
+            if (id == null) return@thenApply RequirementResult.unsatisfied(messages.line("not-linked"))
+            val created = (id shr 22) + DISCORD_EPOCH
+            val age = (System.currentTimeMillis() - created).coerceAtLeast(0L)
+            satisfiedIf(
+                age >= requiredMillis,
+                messages.line(
+                    "requirement-account-age",
+                    Placeholder.parsed("current", humanizeDuration(age)),
+                    Placeholder.parsed("required", humanizeDuration(requiredMillis)),
+                ),
+            )
+        }
+}
+
+private class MemberSinceRequirement(
+    private val storage: LinkStorage,
+    private val messages: Messages,
+    private val discord: DiscordManager,
+    private val executor: Executor,
+    private val requiredMillis: Long,
+) : Requirement {
+    override fun check(context: RequirementContext): CompletableFuture<RequirementResult> =
+        discordId(context.player.uniqueId, storage, executor).thenCompose { id ->
+            when {
+                id == null -> completed(messages.line("not-linked"))
+                !discord.isReady() -> completed(messages.line("bot-offline"))
+                else -> discord.retrieveMember(id).thenApply { member ->
+                    if (member == null) return@thenApply RequirementResult.unsatisfied(messages.line("requirement-member"))
+                    val joined = if (member.hasTimeJoined()) member.timeJoined.toInstant().toEpochMilli() else 0L
+                    val duration = (System.currentTimeMillis() - joined).coerceAtLeast(0L)
+                    satisfiedIf(
+                        duration >= requiredMillis,
+                        messages.line(
+                            "requirement-member-since",
+                            Placeholder.parsed("current", humanizeDuration(duration)),
+                            Placeholder.parsed("required", humanizeDuration(requiredMillis)),
+                        ),
+                    )
+                }
+            }
+        }
+}
+
+private const val DISCORD_EPOCH = 1_420_070_400_000L
+private const val DAY_MILLIS = 86_400_000L
+private val DURATION_REGEX = Regex("(\\d+)\\s*([smhdw])", RegexOption.IGNORE_CASE)
+
+private fun parseDurationMillis(text: String): Long {
+    var total = 0L
+    for (match in DURATION_REGEX.findAll(text)) {
+        val value = match.groupValues[1].toLongOrNull() ?: continue
+        total += when (match.groupValues[2].lowercase()) {
+            "s" -> value * 1000L
+            "m" -> value * 60_000L
+            "h" -> value * 3_600_000L
+            "d" -> value * DAY_MILLIS
+            "w" -> value * 7L * DAY_MILLIS
+            else -> 0L
+        }
+    }
+    if (total == 0L) text.trim().toLongOrNull()?.let { return it * DAY_MILLIS }
+    return total
+}
+
+private fun humanizeDuration(millis: Long): String {
+    val days = millis / DAY_MILLIS
+    val hours = (millis % DAY_MILLIS) / 3_600_000L
+    return when {
+        days > 0L && hours > 0L -> "${days}d ${hours}h"
+        days > 0L -> "${days}d"
+        else -> "${hours}h"
+    }
 }
 
 private fun completed(description: Component): CompletableFuture<RequirementResult> =

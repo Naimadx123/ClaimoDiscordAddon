@@ -27,6 +27,8 @@ Use these `type` values inside a voucher's `requirements` list.
 | `discord_command` | The account has used a slash command enough times | `command`, `amount`, `description` |
 | `discord_server_tag` | The account wears your server tag | `tag` (optional) |
 | `discord_status` | The account's custom status contains or equals a value | `value`, `match` |
+| `discord_account_age` | The Discord account is old enough | `duration` |
+| `discord_member_since` | The account has been in your server long enough | `duration` |
 
 Notes on options:
 
@@ -37,6 +39,8 @@ Notes on options:
 - `tag` is optional. Leave it out to accept any tag that points at your server, or set it to
   require an exact tag text.
 - `match` is `contains` (default) or `equals`.
+- `duration` accepts values like `30d`, `2w`, `12h`. The age comes from the account's Discord id,
+  so this check needs no extra API calls.
 
 ## Setup
 

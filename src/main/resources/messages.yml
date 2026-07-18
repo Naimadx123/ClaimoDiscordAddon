@@ -10,6 +10,8 @@ requirement-messages: "<gray>Send <white><amount></white> messages on Discord <d
 requirement-command: "<gray>Use <white>/<command></white> on Discord <dark_gray>(<used>/<amount>)</dark_gray>."
 requirement-server-tag: "<gray>Equip our server tag <white><tag></white> on your profile."
 requirement-status: "<gray>Put <white><value></white> in your Discord status."
+requirement-account-age: "<gray>Have a Discord account at least <white><required></white> old <dark_gray>(yours: <current>)</dark_gray>."
+requirement-member-since: "<gray>Be on our Discord for at least <white><required></white> <dark_gray>(you: <current>)</dark_gray>."
 not-linked: "<gray>Link your Discord account first with <white>/claimodiscord link</white>."
 bot-offline: "<gray>The Discord bot is offline; try again shortly."
 
