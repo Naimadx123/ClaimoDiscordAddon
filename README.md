@@ -11,7 +11,7 @@ It talks to Discord through your own bot (JDA), so you only need a bot token and
 
 - Claimo installed on the server. This is an addon and will not load without it.
 - A Discord bot token from the [Discord Developer Portal](https://discord.com/developers/applications).
-- A Paper or Folia server that matches your Claimo version. Folia is supported.
+- A Paper or Folia server on 1.21.1 or newer (tested up to 26.2). Folia is supported.
 
 ## Requirement types
 
@@ -61,9 +61,17 @@ content, it only counts messages per author.
 
 ## Linking an account
 
-1. The player runs `/claimodiscord link` in game and gets a short code.
-2. They run your bot's `/link` slash command in Discord and paste the code.
-3. The bot links the two accounts and confirms in game.
+Linking uses a panel message with a button, so players never need a slash command.
+
+1. As an admin, post the panel once with `/claimodiscord panel <channel-id>` (or set a default
+   channel under `discord.panel-channel-id` and run `/claimodiscord panel`). The bot sends an embed
+   with a Link account button to that channel.
+2. A player runs `/claimodiscord link` in game and gets a short code.
+3. They click the button on the panel, paste the code in the popup, and submit.
+4. The bot links the two accounts, replies with a confirmation embed, and tells the player in game.
+
+The button and popup keep working after a bot restart. Discord sends the button id with every
+click, so the bot does not need the old panel message in its cache to handle it.
 
 A code expires after a few minutes (set by `link.code-expiry-seconds`). Players can unlink at any
 time with `/claimodiscord unlink`.
@@ -114,6 +122,7 @@ connection. Changing the storage type needs a restart.
 | `/claimodiscord unlink` | `claimodiscord.link` | Remove your link |
 | `/claimodiscord list` | `claimodiscord.link` | Show your linked account |
 | `/claimodiscord status` | `claimodiscord.admin` | Show the bot state and server id |
+| `/claimodiscord panel [channel-id]` | `claimodiscord.admin` | Post the link panel with the button |
 | `/claimodiscord set <player> <discord-id>` | `claimodiscord.admin` | Link a player by hand |
 | `/claimodiscord reload` | `claimodiscord.admin` | Reload messages and re-sync slash commands |
 

@@ -41,18 +41,30 @@ link:
   # How long a generated link code stays valid, in seconds.
   code-expiry-seconds: 300
 
-# Text and slash-command settings shown on the Discord side (plain text, not MiniMessage).
+# Text shown on the Discord side (plain text, not MiniMessage).
+# Players link by clicking a button on a panel message and pasting their code in a modal,
+# so no slash command is needed for linking.
 discord:
-  # Name of the slash command players run on Discord to link (e.g. /link).
-  link-command-name: "link"
-  # Description of the link slash command, shown in Discord's command list.
-  link-command-description: "Link your Discord account to Minecraft."
-  # Name of the code argument on the link slash command (e.g. /link code:ABC123).
-  link-option-name: "code"
-  # Description of the code argument, shown in Discord.
-  link-option-description: "The code shown to you in-game."
-  # Reply after a successful link. %player% = the player's name.
+  # The link panel: post it with /claimodiscord panel [channel-id]. The button and modal on it
+  # keep working after a bot restart, since Discord sends the button id with each click.
+  # Default channel for /claimodiscord panel when no id is given (0 = must pass one).
+  panel-channel-id: "0"
+  # The panel embed players see with the button.
+  panel-embed-title: "Link your Minecraft account"
+  panel-embed-description: "Run /claimodiscord link in-game to get a code, then click the button below and paste it."
+  panel-embed-color: "#5865F2"
+  # The button and the popup (modal) it opens.
+  link-button-label: "Link account"
+  link-modal-title: "Link your Minecraft account"
+  link-modal-field-label: "Code"
+  link-modal-field-placeholder: "Paste the code from /claimodiscord link"
+
+  # The successful link confirmation is sent as an embed. %player% = the Discord display name.
   link-success: "Linked to **%player%**. You can close this."
+  # Title, hex color, and footer of that embed.
+  link-embed-title: "Account linked"
+  link-embed-color: "#57F287"
+  link-embed-footer: "Claimo"
   # Reply when the entered code is wrong or expired.
   link-invalid: "That code is invalid or has expired. Run `/claimodiscord link` in-game to get a new one."
   # Reply when the target account is already linked to a different Discord user.

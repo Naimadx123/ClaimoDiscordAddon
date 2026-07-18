@@ -18,7 +18,7 @@ cmd-usage: "<gray>Usage: <white>/claimodiscord <link|unlink|list></white>"
 cmd-players-only: "<red>Only players can use this command."
 cmd-no-permission: "<red>You don't have permission to do that."
 
-cmd-link-created: "<green>Your link code is <white><code></white>.</green> <gray>Run <white>/<command> <code></white> on our Discord within <white><expiry></white>.</gray>"
+cmd-link-created: "<green>Your link code is <white><code></white>.</green> <gray>Click the link button on our Discord and paste it within <white><expiry></white>.</gray>"
 cmd-link-success: "<green>Your Discord account (<white><name></white>) is now linked!"
 
 cmd-unlink-success: "<green>Unlinked your Discord account."
@@ -29,6 +29,9 @@ cmd-list-linked: "<gray>Discord: <white><discord_id></white> <green>(linked)</gr
 
 # Admin.
 cmd-status: "<gray>Bot: <state> <dark_gray>|</dark_gray> Guild: <white><guild></white>"
+cmd-panel-usage: "<gray>Usage: <white>/claimodiscord panel <channel-id></white> <dark_gray>(or set a default channel in config)</dark_gray>"
+cmd-panel-sent: "<green>Link panel posted to Discord."
+cmd-panel-failed: "<red>Could not post the panel. Check the bot is online and the channel id is right."
 cmd-set-usage: "<gray>Usage: <white>/claimodiscord set <player> <discord-id></white>"
 cmd-set-success: "<green>Linked <white><player></white> to Discord id <white><discord_id></white>."
 cmd-player-not-found: "<red>No known player named '<player>'. They must have joined the server before."

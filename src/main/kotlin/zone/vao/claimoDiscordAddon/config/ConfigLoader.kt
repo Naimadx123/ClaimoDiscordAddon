@@ -27,14 +27,21 @@ class ConfigLoader(private val plugin: JavaPlugin) {
             membersIntent = bot?.getBoolean("intents.members", false) ?: false,
             codeLength = (link?.getInt("code-length", 6) ?: 6).coerceIn(4, 12),
             codeExpirySeconds = (link?.getLong("code-expiry-seconds", 300L) ?: 300L).coerceAtLeast(30L),
-            linkCommandName = discord?.getString("link-command-name", "link")?.trim() ?: "link",
-            linkCommandDescription = discord?.getString("link-command-description", "Link your account.") ?: "Link your account.",
-            linkOptionName = discord?.getString("link-option-name", "code")?.trim() ?: "code",
-            linkOptionDescription = discord?.getString("link-option-description", "Your in-game code.") ?: "Your in-game code.",
             discordLinkSuccess = discord?.getString("link-success", "Linked to **%player%**.") ?: "Linked to **%player%**.",
             discordLinkInvalid = discord?.getString("link-invalid", "Invalid or expired code.") ?: "Invalid or expired code.",
             discordLinkTaken = discord?.getString("link-taken", "Already linked to someone else.") ?: "Already linked to someone else.",
             discordCommandReply = discord?.getString("command-reply", "Recorded! (%used%/%amount%)") ?: "Recorded! (%used%/%amount%)",
+            linkButtonLabel = discord?.getString("link-button-label", "Link account") ?: "Link account",
+            linkModalTitle = discord?.getString("link-modal-title", "Link your account") ?: "Link your account",
+            linkModalFieldLabel = discord?.getString("link-modal-field-label", "Code") ?: "Code",
+            linkModalFieldPlaceholder = discord?.getString("link-modal-field-placeholder", "Paste your in-game code") ?: "Paste your in-game code",
+            panelChannelId = discord?.getString("panel-channel-id")?.trim()?.toLongOrNull() ?: 0L,
+            panelEmbedTitle = discord?.getString("panel-embed-title", "Link your account") ?: "Link your account",
+            panelEmbedDescription = discord?.getString("panel-embed-description", "Click the button below and paste your code.") ?: "Click the button below and paste your code.",
+            panelEmbedColor = parseColor(discord?.getString("panel-embed-color")),
+            linkEmbedTitle = discord?.getString("link-embed-title", "Account linked") ?: "Account linked",
+            linkEmbedColor = parseColor(discord?.getString("link-embed-color")),
+            linkEmbedFooter = discord?.getString("link-embed-footer", "Claimo") ?: "Claimo",
             storage = parseStorage(main.getConfigurationSection("storage")),
             messages = parseMessages(messages),
         )
@@ -50,6 +57,9 @@ class ConfigLoader(private val plugin: JavaPlugin) {
         tablePrefix = section?.getString("table-prefix") ?: "claimodiscord_",
         poolSize = (section?.getInt("pool-size", 10) ?: 10).coerceAtLeast(1),
     )
+
+    private fun parseColor(value: String?): Int =
+        value?.trim()?.removePrefix("#")?.toIntOrNull(16) ?: 0x5865F2
 
     private fun parseStorageType(value: String?): StorageType = when (value?.trim()?.lowercase()) {
         "sqlite" -> StorageType.SQLITE

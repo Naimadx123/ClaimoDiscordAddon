@@ -2,7 +2,7 @@ name: ClaimoDiscordAddon
 version: '${version}'
 
 main: zone.vao.claimoDiscordAddon.ClaimoDiscordAddon
-api-version: '26.2'
+api-version: '1.21'
 load: POSTWORLD
 author: "Naimad (dc: 4g0)"
 description: "Discord voucher requirements for Claimo (member / role / booster / messages / command / server tag / status)."

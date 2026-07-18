@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm") version "2.4.20-Beta1"
     id("com.gradleup.shadow") version "9.6.0"
-    id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
 val claimoApiVersion = "1.3-SNAPSHOT"
@@ -18,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.2.build.+")
+    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly("zone.vao:claimo-api:$claimoApiVersion")
     compileOnly("com.zaxxer:HikariCP:$hikariVersion")
     compileOnly("com.google.code.gson:gson:2.11.0")
@@ -30,7 +29,7 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(25)
+    jvmToolchain(21)
 }
 
 tasks {
@@ -62,11 +61,6 @@ tasks {
         ).forEach { pkg ->
             relocate(pkg, "$relocateBase.${pkg.substringAfterLast('.')}")
         }
-    }
-
-    runServer {
-        minecraftVersion("26.2")
-        jvmArgs("-Xms2G", "-Xmx2G")
     }
 
     processResources {

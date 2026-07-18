@@ -20,6 +20,7 @@ class DiscordAddonCommand(private val plugin: ClaimoDiscordAddon) : TabExecutor 
             "unlink" -> handleUnlink(sender)
             "list" -> handleList(sender)
             "status" -> handleStatus(sender)
+            "panel" -> handlePanel(sender, args)
             "set" -> handleSet(sender, args)
             "reload" -> handleReload(sender)
             else -> messages().send(sender, "cmd-usage")
@@ -33,9 +34,17 @@ class DiscordAddonCommand(private val plugin: ClaimoDiscordAddon) : TabExecutor 
         messages().send(
             sender, "cmd-link-created",
             Placeholder.unparsed("code", code),
-            Placeholder.parsed("command", plugin.configuration.linkCommandName),
             Placeholder.unparsed("expiry", humanizeSeconds(plugin.configuration.codeExpirySeconds)),
         )
+    }
+
+    private fun handlePanel(sender: CommandSender, args: Array<out String>) {
+        if (!sender.hasPermission(ADMIN_PERMISSION)) return messages().send(sender, "cmd-no-permission")
+        val channelId = args.getOrNull(1)?.trim()?.toLongOrNull() ?: plugin.configuration.panelChannelId
+        if (channelId == 0L) return messages().send(sender, "cmd-panel-usage")
+        plugin.discord.postLinkPanel(channelId).whenComplete { ok, _ ->
+            onMain { messages().send(sender, if (ok == true) "cmd-panel-sent" else "cmd-panel-failed") }
+        }
     }
 
     private fun handleUnlink(sender: CommandSender) {
@@ -137,6 +146,6 @@ class DiscordAddonCommand(private val plugin: ClaimoDiscordAddon) : TabExecutor 
     private companion object {
         const val ADMIN_PERMISSION = "claimodiscord.admin"
         val PLAYER_SUBS = listOf("link", "unlink", "list")
-        val ADMIN_SUBS = listOf("set", "status", "reload")
+        val ADMIN_SUBS = listOf("panel", "set", "status", "reload")
     }
 }
