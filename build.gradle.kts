@@ -45,16 +45,11 @@ tasks {
 
     shadowJar {
         archiveFileName.set("ClaimoDiscordAddon-v${project.version}.jar")
-        // Transformers below need to see every copy of a duplicated path, not just the first one.
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
         isPreserveFileTimestamps = false
         isReproducibleFileOrder = true
         mergeServiceFiles()
 
-        // Several dependencies ship META-INF/LICENSE + META-INF/NOTICE. Duplicate jar entries make
-        // Paper's plugin remapper (1.20.5 - 1.21.x) abort with "Duplicate entries detected", so keep
-        // the first copy of each and drop the rest. Done with a transformer rather than
-        // DuplicatesStrategy.EXCLUDE, which would also starve mergeServiceFiles() of its input.
         transform(PreserveFirstFoundResourceTransformer::class.java) {
             include("META-INF/LICENSE*", "META-INF/NOTICE*", "META-INF/*LICENSE*")
         }
@@ -64,7 +59,6 @@ tasks {
         }
 
         exclude("org/slf4j/**")
-        // Build/packaging metadata that has no runtime meaning inside a plugin jar.
         exclude("META-INF/maven/**")
         exclude("META-INF/native-image/**")
         exclude("META-INF/rewrite/**")
@@ -79,11 +73,6 @@ tasks {
             exclude(dependency("org.slf4j:.*:.*"))
         }
 
-        // Drop classes nothing reaches - trove4j, commons-collections4 and kotlin-stdlib ship
-        // thousands of classes of which JDA and our own code touch a small fraction.
-        // Jackson is the one library here that resolves types reflectively, so it is kept whole;
-        // excluding anything else would cascade to its whole subtree (trove and commons-collections4
-        // are children of JDA, kotlin-stdlib is a child of okhttp) and disable minimization.
         minimize {
             exclude(dependency("com.fasterxml.jackson.*:.*:.*"))
         }
