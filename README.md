@@ -27,6 +27,7 @@ Use these `type` values inside a voucher's `requirements` list.
 | `discord_command` | The account has used a slash command enough times | `command`, `amount`, `description` |
 | `discord_server_tag` | The account wears your server tag | `tag` (optional) |
 | `discord_status` | The account's custom status contains or equals a value | `value`, `match` |
+| `discord_nickname` | The account's name on your server contains, equals or matches a value | `value`, `match`, `example` |
 | `discord_account_age` | The Discord account is old enough | `duration` |
 | `discord_member_since` | The account has been in your server long enough | `duration` |
 
@@ -38,7 +39,15 @@ Notes on options:
   at least one voucher uses it, so nothing extra shows up in Discord until you set it.
 - `tag` is optional. Leave it out to accept any tag that points at your server, or set it to
   require an exact tag text.
-- `match` is `contains` (default) or `equals`.
+- `match` is `contains` (default) or `equals`. `discord_nickname` also accepts `regex`.
+- `discord_nickname` looks at the name Discord shows in your member list: the server nickname when
+  the player set one, otherwise their display name. Matching ignores case, regex included. A bad
+  regex is logged on startup and the requirement then never passes.
+- `example` is optional and only cosmetic: it is the sample name shown to players, so they see what
+  to type instead of a bare fragment or a regex. With `value: "myserver.com"` and
+  `example: "Naimad | myserver.com"` the checklist reads
+  *"Add myserver.com to your Discord name, like Naimad | myserver.com"*. Without it the shorter
+  `requirement-nickname` line is used. Both lines live in `messages.yml`.
 - `duration` accepts values like `30d`, `2w`, `12h`. The age comes from the account's Discord id,
   so this check needs no extra API calls.
 
@@ -101,7 +110,34 @@ requirements:
   - type: discord_status
     value: "play.myserver.net"
     match: contains
+  - type: discord_nickname
+    value: "myserver.com"
+    match: contains
+    example: "Naimad | myserver.com"
 ```
+
+`match: contains` accepts the tag anywhere in the name. Use `match: regex` when the format itself
+matters, and let `example` carry the human readable version, since players should never be shown a
+pattern:
+
+```yaml
+requirements:
+  # Name must end with " | myserver.com", e.g. "Naimad | myserver.com".
+  - type: discord_nickname
+    value: '^.+ \| myserver\.com$'
+    match: regex
+    example: "Naimad | myserver.com"
+
+  # Either domain, anywhere in the name.
+  - type: discord_nickname
+    value: 'myserver\.(com|net)'
+    match: regex
+    example: "Naimad | myserver.com"
+```
+
+Quote regex patterns with single quotes so YAML keeps the backslashes as written. Matching ignores
+case, and the pattern only has to be found somewhere in the name unless you anchor it with `^` and
+`$`.
 
 On servers running the in game code creator, these types also show up there with input fields,
 so you can build them without editing files.

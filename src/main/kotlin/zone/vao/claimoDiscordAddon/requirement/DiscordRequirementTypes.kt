@@ -10,10 +10,11 @@ object DiscordRequirementTypes {
     const val COMMAND = "discord_command"
     const val SERVER_TAG = "discord_server_tag"
     const val STATUS = "discord_status"
+    const val NICKNAME = "discord_nickname"
     const val ACCOUNT_AGE = "discord_account_age"
     const val MEMBER_SINCE = "discord_member_since"
 
     val TYPES: List<String> = listOf(
-        LINKED, MEMBER, ROLE, BOOSTER, MESSAGES, COMMAND, SERVER_TAG, STATUS, ACCOUNT_AGE, MEMBER_SINCE,
+        LINKED, MEMBER, ROLE, BOOSTER, MESSAGES, COMMAND, SERVER_TAG, STATUS, NICKNAME, ACCOUNT_AGE, MEMBER_SINCE,
     )
 }

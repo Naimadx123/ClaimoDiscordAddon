@@ -10,6 +10,10 @@ requirement-messages: "<gray>Send <white><amount></white> messages on Discord <d
 requirement-command: "<gray>Use <white>/<command></white> on Discord <dark_gray>(<used>/<amount>)</dark_gray>."
 requirement-server-tag: "<gray>Equip our server tag <white><tag></white> on your profile."
 requirement-status: "<gray>Put <white><value></white> in your Discord status."
+# <value> is the required text (or the regex), <example> is the sample name from the voucher,
+# <current> is the player's current Discord name. The -example line is used when `example` is set.
+requirement-nickname: "<gray>Add <white><value></white> to your Discord name <dark_gray>(yours: <current>)</dark_gray>."
+requirement-nickname-example: "<gray>Add <white><value></white> to your Discord name, like <white><example></white> <dark_gray>(yours: <current>)</dark_gray>."
 requirement-account-age: "<gray>Have a Discord account at least <white><required></white> old <dark_gray>(yours: <current>)</dark_gray>."
 requirement-member-since: "<gray>Be on our Discord for at least <white><required></white> <dark_gray>(you: <current>)</dark_gray>."
 not-linked: "<gray>Link your Discord account first with <white>/claimodiscord link</white>."

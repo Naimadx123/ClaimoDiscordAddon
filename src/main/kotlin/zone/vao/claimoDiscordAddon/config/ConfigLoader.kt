@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import zone.vao.claimoDiscordAddon.storage.StorageConfig
 import zone.vao.claimoDiscordAddon.storage.StorageType
 import java.io.File
+import java.io.InputStreamReader
 
 class ConfigLoader(private val plugin: JavaPlugin) {
 
@@ -13,8 +14,8 @@ class ConfigLoader(private val plugin: JavaPlugin) {
         saveDefault("config.yml")
         saveDefault("messages.yml")
 
-        val main = YamlConfiguration.loadConfiguration(file("config.yml"))
-        val messages = YamlConfiguration.loadConfiguration(file("messages.yml"))
+        val main = loadYaml("config.yml")
+        val messages = loadYaml("messages.yml")
         val bot = main.getConfigurationSection("bot")
         val link = main.getConfigurationSection("link")
         val discord = main.getConfigurationSection("discord")
@@ -79,6 +80,15 @@ class ConfigLoader(private val plugin: JavaPlugin) {
                 ?.forEach { key -> section.getString(key)?.let { put(key, it) } }
         }
         return Messages(prefix, raw)
+    }
+
+    private fun loadYaml(name: String): YamlConfiguration {
+        val config = YamlConfiguration.loadConfiguration(file(name))
+        plugin.getResource(name)?.use { stream ->
+            config.setDefaults(YamlConfiguration.loadConfiguration(InputStreamReader(stream, Charsets.UTF_8)))
+            config.options().copyDefaults(true)
+        }
+        return config
     }
 
     private fun saveDefault(name: String) {

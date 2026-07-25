@@ -97,6 +97,31 @@ object DiscordRequirements {
         )
 
         ClaimoApi.registerRequirement(
+            DiscordRequirementTypes.NICKNAME,
+            { cfg ->
+                val value = cfg.getString("value", "").orEmpty().trim()
+                val match = cfg.getString("match", "contains").orEmpty().trim().lowercase()
+                val pattern = if (match == "regex") {
+                    runCatching { Regex(value, RegexOption.IGNORE_CASE) }
+                        .onFailure { plugin.logger.warning("discord_nickname: invalid regex '$value' (${it.message}); the requirement can never be met.") }
+                        .getOrNull()
+                } else {
+                    null
+                }
+                NicknameRequirement(
+                    storage(), messages(), discord(), executor,
+                    value, match, pattern,
+                    cfg.getString("example", "").orEmpty().trim(),
+                )
+            },
+            listOf(
+                RequirementInput.TextInput("value", "Text the name must contain (or a regex)"),
+                RequirementInput.TextInput("match", "Match mode (contains, equals or regex)", initial = "contains"),
+                RequirementInput.TextInput("example", "Example name shown to players (e.g. Steve | myserver.com)"),
+            ),
+        )
+
+        ClaimoApi.registerRequirement(
             DiscordRequirementTypes.ACCOUNT_AGE,
             { cfg ->
                 val duration = cfg.getString("duration")?.trim().orEmpty()
@@ -310,6 +335,43 @@ private class StatusRequirement(
                 }
             }
         }
+}
+
+private class NicknameRequirement(
+    private val storage: LinkStorage,
+    private val messages: Messages,
+    private val discord: DiscordManager,
+    private val executor: Executor,
+    private val value: String,
+    private val match: String,
+    private val pattern: Regex?,
+    private val example: String,
+) : Requirement {
+    override fun check(context: RequirementContext): CompletableFuture<RequirementResult> =
+        discordId(context.player.uniqueId, storage, executor).thenCompose { id ->
+            when {
+                id == null -> completed(messages.line("not-linked"))
+                !discord.isReady() -> completed(messages.line("bot-offline"))
+                else -> discord.retrieveMember(id).thenApply { member ->
+                    val name = member?.effectiveName.orEmpty()
+                    satisfiedIf(member != null && matches(name), description(name))
+                }
+            }
+        }
+
+    private fun matches(name: String): Boolean = when {
+        value.isEmpty() -> false
+        match == "regex" -> pattern?.containsMatchIn(name) == true
+        match == "equals" || match == "equal" || match == "==" -> name.equals(value, ignoreCase = true)
+        else -> name.contains(value, ignoreCase = true)
+    }
+
+    private fun description(current: String): Component = messages.line(
+        if (example.isEmpty()) "requirement-nickname" else "requirement-nickname-example",
+        Placeholder.unparsed("value", value),
+        Placeholder.unparsed("example", example),
+        Placeholder.unparsed("current", current),
+    )
 }
 
 private class AccountAgeRequirement(
