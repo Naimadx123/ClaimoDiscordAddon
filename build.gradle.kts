@@ -5,7 +5,7 @@ plugins {
     id("com.gradleup.shadow") version "9.6.0"
 }
 
-val claimoApiVersion = "1.3"
+val claimoApiVersion = "1.4.4-SNAPSHOT"
 val jdaVersion = "6.5.0"
 val hikariVersion = "6.3.0"
 val relocateBase = "zone.vao.claimoDiscordAddon.libs"

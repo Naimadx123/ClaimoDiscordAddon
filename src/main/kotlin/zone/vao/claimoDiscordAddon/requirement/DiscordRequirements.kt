@@ -150,7 +150,7 @@ object DiscordRequirements {
 
     fun commandSpecs(): List<DiscordManager.CustomCommandSpec> =
         ClaimoApi.vouchers()
-            .flatMap { it.requirements }
+            .flatMap { it.flattenedRequirements() }
             .filter { it.type.equals(DiscordRequirementTypes.COMMAND, ignoreCase = true) }
             .mapNotNull { cfg ->
                 val name = cfg.getString("command", "").orEmpty().trim().lowercase()
