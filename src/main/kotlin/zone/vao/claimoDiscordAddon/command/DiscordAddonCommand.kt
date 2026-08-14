@@ -89,11 +89,13 @@ class DiscordAddonCommand(private val plugin: ClaimoDiscordAddon) {
     private fun handleLink(sender: CommandSender) {
         val player = sender as? Player ?: return messages().send(sender, "cmd-players-only")
         val code = plugin.linkCodes.create(player.uniqueId)
+        val expiry = humanizeSeconds(plugin.configuration.codeExpirySeconds)
         messages().send(
             sender, "cmd-link-created",
             Placeholder.unparsed("code", code),
-            Placeholder.unparsed("expiry", humanizeSeconds(plugin.configuration.codeExpirySeconds)),
+            Placeholder.unparsed("expiry", expiry),
         )
+        if (plugin.dialogsSupported) LinkCodeDialog.show(player, messages(), code, expiry)
     }
 
     private fun handleUnlink(sender: CommandSender) {

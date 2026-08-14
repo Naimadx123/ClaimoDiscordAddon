@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     compileOnly("zone.vao:claimo-api:$claimoApiVersion")
     compileOnly("com.zaxxer:HikariCP:$hikariVersion")
     compileOnly("com.google.code.gson:gson:2.11.0")

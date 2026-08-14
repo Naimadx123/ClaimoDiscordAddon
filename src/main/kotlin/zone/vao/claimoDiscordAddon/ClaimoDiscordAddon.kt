@@ -40,6 +40,10 @@ class ClaimoDiscordAddon : JavaPlugin() {
 
     private val configLoader = ConfigLoader(this)
 
+    val dialogsSupported: Boolean by lazy {
+        runCatching { Class.forName("io.papermc.paper.dialog.Dialog") }.isSuccess
+    }
+
     override fun onEnable() {
         configuration = configLoader.load()
         linkStorage = StorageFactory.create(this, configuration.storage)

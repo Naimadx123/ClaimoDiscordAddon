@@ -25,6 +25,12 @@ cmd-players-only: "<red>Only players can use this command."
 cmd-no-permission: "<red>You don't have permission to do that."
 
 cmd-link-created: "<green>Your link code is <white><code></white>.</green> <gray>Click the link button on our Discord and paste it within <white><expiry></white>.</gray>"
+
+# Link-code dialog (1.21.7+; older servers only get the chat line above).
+# <code> and <expiry> work in all three.
+dialog-link-title: "<gradient:#5865F2:#7289DA>Link your Discord account</gradient>"
+dialog-link-body: "<gray>Your link code:</gray>\n\n<white><b><code></b></white>\n\n<gray>Copy it, click the link button on our Discord and paste it within <white><expiry></white>.</gray>"
+dialog-link-copy: "Copy code"
 cmd-link-success: "<green>Your Discord account (<white><name></white>) is now linked!"
 
 cmd-unlink-success: "<green>Unlinked your Discord account."
