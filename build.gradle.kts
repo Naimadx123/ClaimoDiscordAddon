@@ -1,13 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.transformers.PreserveFirstFoundResourceTransformer
 
 plugins {
-    kotlin("jvm") version "2.4.20-Beta1"
-    id("com.gradleup.shadow") version "9.6.0"
+    kotlin("jvm") version "2.4.20-RC2"
+    id("com.gradleup.shadow") version "9.6.1"
 }
 
 val claimoApiVersion = "1.4.4-SNAPSHOT"
 val jdaVersion = "6.5.0"
-val hikariVersion = "6.3.0"
+val hikariVersion = "7.1.0"
 val relocateBase = "zone.vao.claimoDiscordAddon.libs"
 
 repositories {
@@ -23,9 +23,9 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     compileOnly("zone.vao:claimo-api:$claimoApiVersion")
     compileOnly("com.zaxxer:HikariCP:$hikariVersion")
-    compileOnly("com.google.code.gson:gson:2.11.0")
-    compileOnly("me.clip:placeholderapi:2.11.6")
-    compileOnly("io.github.miniplaceholders:miniplaceholders-api:3.0.1")
+    compileOnly("com.google.code.gson:gson:2.14.0")
+    compileOnly("me.clip:placeholderapi:2.12.3")
+    compileOnly("io.github.miniplaceholders:miniplaceholders-api:3.1.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("net.dv8tion:JDA:$jdaVersion") {
         exclude(module = "opus-java")

@@ -31,6 +31,6 @@ class DiscordMiniExpansion(private val plugin: ClaimoDiscordAddon) {
         builder.build().register()
     }
 
-    private fun tag(value: String?): Tag =
+    private fun tag(value: String?): Tag? =
         if (value == null) Tags.NULL_TAG else Tag.selfClosingInserting(Component.text(value))
 }
