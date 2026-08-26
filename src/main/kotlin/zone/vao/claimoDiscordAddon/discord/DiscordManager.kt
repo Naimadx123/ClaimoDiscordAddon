@@ -108,8 +108,10 @@ class DiscordManager(private val plugin: ClaimoDiscordAddon) : ListenerAdapter()
         return guild.retrieveMemberById(discordId).submit().handle { member, _ -> member }
     }
 
+    fun cachedMember(discordId: Long): Member? = jda?.getGuildById(guildId)?.getMemberById(discordId)
+
     fun customStatus(discordId: Long): String? {
-        val member = jda?.getGuildById(guildId)?.getMemberById(discordId) ?: return null
+        val member = cachedMember(discordId) ?: return null
         val activity = member.activities.firstOrNull { it.type == Activity.ActivityType.CUSTOM_STATUS } ?: return null
         return activity.name.takeIf { it.isNotBlank() } ?: activity.state
     }

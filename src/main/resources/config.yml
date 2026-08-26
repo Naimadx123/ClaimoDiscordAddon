@@ -22,6 +22,12 @@ bot:
     # without it those checks still work via on-demand REST lookups.
     members: false
 
+# Text returned by the boolean placeholders (linked, member, booster, role, bot_online) in both
+# PlaceholderAPI and MiniPlaceholders. Use it to show custom text instead of true/false.
+placeholders:
+  true-value: "true"
+  false-value: "false"
+
 # Where player -> Discord account links (and message/command counters) are stored.
 # type: yaml | sqlite | mysql | mariadb | postgresql
 #   yaml   -> plugins/ClaimoDiscordAddon/links.yml  (no setup, single server)

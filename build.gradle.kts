@@ -14,6 +14,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://repo.extendedclip.com/releases/")
     maven("https://repo.vao.zone/releases")
     maven("https://repo.vao.zone/snapshots")
 }
@@ -23,6 +24,8 @@ dependencies {
     compileOnly("zone.vao:claimo-api:$claimoApiVersion")
     compileOnly("com.zaxxer:HikariCP:$hikariVersion")
     compileOnly("com.google.code.gson:gson:2.11.0")
+    compileOnly("me.clip:placeholderapi:2.11.6")
+    compileOnly("io.github.miniplaceholders:miniplaceholders-api:3.0.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("net.dv8tion:JDA:$jdaVersion") {
         exclude(module = "opus-java")

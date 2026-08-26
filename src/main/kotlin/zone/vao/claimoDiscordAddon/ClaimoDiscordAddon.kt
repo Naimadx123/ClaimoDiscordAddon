@@ -55,10 +55,12 @@ class ClaimoDiscordAddon : JavaPlugin() {
         discord.start()
 
         registerCommand()
+        registerPlaceholders()
+        registerMiniPlaceholders()
 
         server.asyncScheduler.runAtFixedRate(this, { linkStorage.flush() }, 60L, 60L, TimeUnit.SECONDS)
 
-        logger.info("ClaimoDiscordAddon enabled — ${DiscordRequirementTypes.TYPES.size} requirement types registered (storage: ${configuration.storage.type}).")
+        logger.info("ClaimoDiscordAddon enabled - ${DiscordRequirementTypes.TYPES.size} requirement types registered (storage: ${configuration.storage.type}).")
     }
 
     override fun onDisable() {
@@ -76,6 +78,26 @@ class ClaimoDiscordAddon : JavaPlugin() {
                 "Link and manage your Discord account for Claimo rewards.",
             )
         }
+    }
+
+    private fun registerPlaceholders() {
+        if (!server.pluginManager.isPluginEnabled("PlaceholderAPI")) return
+        runCatching {
+            val expansion = Class.forName("zone.vao.claimoDiscordAddon.hook.DiscordExpansion")
+                .getConstructor(ClaimoDiscordAddon::class.java)
+                .newInstance(this)
+            expansion.javaClass.getMethod("register").invoke(expansion)
+        }.onFailure { logger.warning("Failed to register the PlaceholderAPI expansion: ${it.message}") }
+    }
+
+    private fun registerMiniPlaceholders() {
+        if (!server.pluginManager.isPluginEnabled("MiniPlaceholders")) return
+        runCatching {
+            val expansion = Class.forName("zone.vao.claimoDiscordAddon.hook.DiscordMiniExpansion")
+                .getConstructor(ClaimoDiscordAddon::class.java)
+                .newInstance(this)
+            expansion.javaClass.getMethod("register").invoke(expansion)
+        }.onFailure { logger.warning("Failed to register the MiniPlaceholders expansion: ${it.message}") }
     }
 
     fun reloadConfiguration() {

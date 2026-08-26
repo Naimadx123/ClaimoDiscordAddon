@@ -154,6 +154,39 @@ Links and counters are saved through one storage layer. Pick the backend in `con
 The SQL drivers are downloaded by the server at first start, so the first launch needs an internet
 connection. Changing the storage type needs a restart.
 
+## Placeholders
+
+The addon registers a `claimodiscord` expansion for PlaceholderAPI and, when MiniPlaceholders is
+installed, the same values as MiniMessage tags. Both are optional: without those plugins nothing is
+registered and the addon works as before.
+
+| PlaceholderAPI | MiniPlaceholders | What it returns |
+| --- | --- | --- |
+| `%claimodiscord_linked%` | `<claimodiscord_linked>` | Whether the player linked a Discord account |
+| `%claimodiscord_id%` | `<claimodiscord_id>` | The linked Discord id, empty when not linked |
+| `%claimodiscord_name%` | `<claimodiscord_name>` | The name Discord shows for them on your server |
+| `%claimodiscord_messages%` | `<claimodiscord_messages>` | Messages they sent on your Discord |
+| `%claimodiscord_member%` | `<claimodiscord_member>` | Whether they are in your Discord server |
+| `%claimodiscord_booster%` | `<claimodiscord_booster>` | Whether they boost your Discord server |
+| `%claimodiscord_status%` | `<claimodiscord_status>` | Their custom status text |
+| `%claimodiscord_role_<id or name>%` | `<claimodiscord_role:'id or name'>` | Whether they hold that role |
+| `%claimodiscord_command_<name>%` | `<claimodiscord_command:'name'>` | Times they used that slash command |
+| `%claimodiscord_bot_online%` | `<claimodiscord_bot_online>` | Whether the bot is connected |
+| `%claimodiscord_guild_id%` | `<claimodiscord_guild_id>` | The configured server id |
+
+The boolean ones return the text set in `config.yml` under `placeholders`, so `true` and `false` can
+be swapped for anything, icons included.
+
+Notes:
+
+- `name`, `member`, `booster`, `status` and `role` read the bot's member cache. They are accurate
+  right away only with `bot.intents.members` on (and `presences` for `status`); without it they fill
+  in once a member has been seen, since a placeholder cannot wait for a REST lookup.
+- Role names with spaces only work in the MiniPlaceholders form, where the argument is quoted. Role
+  ids always work in both.
+- The linked id is cached for a few seconds so a scoreboard refreshing every tick never touches the
+  database. A fresh link or unlink shows up within that window.
+
 ## Commands and permissions
 
 | Command | Permission | Description |

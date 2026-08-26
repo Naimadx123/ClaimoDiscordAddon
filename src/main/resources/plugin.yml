@@ -8,6 +8,7 @@ load: POSTWORLD
 author: "Naimad (dc: 4g0)"
 description: "Discord voucher requirements for Claimo (member / role / booster / messages / command / server tag / status)."
 depend: [Claimo]
+softdepend: [PlaceholderAPI, MiniPlaceholders]
 
 libraries:
   - "com.zaxxer:HikariCP:${hikariVersion}"

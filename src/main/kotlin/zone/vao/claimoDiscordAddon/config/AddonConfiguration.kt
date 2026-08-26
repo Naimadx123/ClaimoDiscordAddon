@@ -27,6 +27,8 @@ data class AddonConfiguration(
     val linkEmbedTitle: String,
     val linkEmbedColor: Int,
     val linkEmbedFooter: String,
+    val placeholderTrue: String,
+    val placeholderFalse: String,
     val storage: StorageConfig,
     val messages: Messages,
 ) {

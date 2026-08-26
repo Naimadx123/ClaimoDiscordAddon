@@ -45,6 +45,8 @@ class ConfigLoader(private val plugin: JavaPlugin) {
             linkEmbedTitle = discord?.getString("link-embed-title", "Account linked") ?: "Account linked",
             linkEmbedColor = parseColor(discord?.getString("link-embed-color")),
             linkEmbedFooter = discord?.getString("link-embed-footer", "Claimo") ?: "Claimo",
+            placeholderTrue = main.getString("placeholders.true-value") ?: "true",
+            placeholderFalse = main.getString("placeholders.false-value") ?: "false",
             storage = parseStorage(main.getConfigurationSection("storage")),
             messages = parseMessages(messages),
         )
